@@ -21,7 +21,7 @@ class Statistics(object):
     def f1(self):
         precision = self.precision()
         recall = self.recall()
-        if self.precision is None or self.recall is None:
+        if precision is None or recall is None or not precision or not recall:
             return None
         return 2 * (precision * recall) / (precision + recall)
 
@@ -208,7 +208,6 @@ def compare_records(
                     fields_tp[key] += value.tp
                     fields_fp[key] += value.fp
                     fields_fn[key] += value.fn
-
 
     for record in no_equivalent_a:
         for field in fields:
