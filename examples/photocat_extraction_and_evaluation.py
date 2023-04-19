@@ -16,6 +16,7 @@ from chemdataextractor.parse.quantity import extract_units
 from e2e_workflow.evaluation.compare_databases import Comparer
 import datetime
 import os
+import inspect
 
 DISABLE_SUBSENTENCES = True
 SHOULD_REMOVE_SUBRECORDS_IF_USED = True
@@ -54,7 +55,8 @@ extractor = CDEDatabaseExtractor(
     use_wandb=use_wandb,
     wandb_config=wandb_config,
     wandb_project=wandb_project,
-    wandb_run_name=os.path.basename(save_root_dir)
+    wandb_run_name=os.path.basename(save_root_dir),
+    wandb_save_files=[(inspect.getmodule(PhotocatalyticActivity).__file__)]
 )
 
 all_start_time = datetime.datetime.now()
