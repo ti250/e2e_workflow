@@ -19,7 +19,16 @@ RETURNING_DATA_TAG = 222
 
 
 class BaseExtractor:
-    def __init__(self, cache_dir=None, use_mpi=True, use_wandb=False, wandb_project=None, wandb_config=None, wandb_run_name=None):
+    def __init__(
+        self,
+        cache_dir=None,
+        use_mpi=True,
+        use_wandb=False,
+        wandb_project=None,
+        wandb_config=None,
+        wandb_run_name=None,
+        wandb_save_files=None,
+    ):
         self.cache_dir = cache_dir
         if self.cache_dir is not None:
             self.cacher = PlainTextCacher(cache_dir)
@@ -36,6 +45,9 @@ class BaseExtractor:
         self.wandb_project = wandb_project
         self.wandb_config = wandb_config
         self.wandb_run_name = wandb_run_name
+        self.wandb_save_files = wandb_save_files
+        if wandb_save_files is None:
+            self.wandb_save_files = []
 
     def will_start_extraction(self):
         if self.use_wandb:
@@ -43,6 +55,9 @@ class BaseExtractor:
                 self.create_wandb_run()
             else:
                 print("EXISTING RUN", wandb.run)
+
+            for file in self.wandb_save_files:
+                wandb.save(file)
 
     def create_wandb_run(self):
         print("WANDB CONFIG:", self.wandb_config)
@@ -104,7 +119,8 @@ class BaseExtractor:
                 break
 
             print(f"\n\n\nPaper {index + 1}/{len(filenames)}: {filename}")
-            wandb.log({"num_papers_processed": index})
+            if self.use_wandb:
+                wandb.log({"num_papers_processed": index})
             full_path = os.path.join(document_dir, filename)
 
             self.extract_paper(full_path)
@@ -137,7 +153,8 @@ class BaseExtractor:
                     )
                     finished_worker_index = status.Get_source()
                     n_finished += 1
-                    wandb.log({"num_papers_processed": n_finished})
+                    if self.use_wandb:
+                        wandb.log({"num_papers_processed": n_finished})
 
                     if n_finished == index and index >= num_papers:
                         break
