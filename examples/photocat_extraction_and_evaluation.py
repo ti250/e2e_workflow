@@ -98,7 +98,8 @@ ignore_fields = [
 global_ignore_fields = [
     "error", "specifier", "labels",
     "roles", "is_reported_value", "raw_value",
-    "raw_units", "extracted_value"
+    "raw_units", "extracted_value", "light_source",
+    "irradiation_time"
 ]
 models = {
     PhotocatalyticActivity: "val_units",
